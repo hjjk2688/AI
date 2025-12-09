@@ -26,10 +26,12 @@
 
 <img width="466" height="248" alt="image" src="https://github.com/user-attachments/assets/35e4b538-ca00-4ba1-a7ce-42b0f2c78817" />
 
-y = x'*'w + 1'*'b
+```text
+y = x*w + 1*b
 
 w : 가중치 
 b : 편향 (민감도)
+```
 
 ### 학습 
 
