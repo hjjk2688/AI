@@ -309,7 +309,7 @@ for epoch in range(250):
 
 wE = 델타e/델타w (기울기)
 
-### 입력 3개 , 목표 27
+#### 입력 3개 , 목표 27
 
 <img width="1245" height="378" alt="image" src="https://github.com/user-attachments/assets/4b3f08c9-beb5-4875-8553-448907de20a1" />
 
@@ -348,3 +348,192 @@ for epoch in range(200):
 
 <img width="772" height="170" alt="image" src="https://github.com/user-attachments/assets/b7618df2-c9f2-4620-93e4-636de91d7565" />
 
+#### 입력2 출력2
+
+<img width="1106" height="330" alt="image" src="https://github.com/user-attachments/assets/55488bba-eb7c-498e-9cb7-0206de44fb6a" />
+
+```python
+x1, x2 = 2, 3
+w1, w2 = 3, 4
+w3, w4 = 5, 6
+b1, b2 = 1, 2
+y1T, y2T = 27, -30
+lr = 0.01
+
+for epoch in range(200):
+    
+    y1 = (x1*w1) + (x2*w2) + (1*b1)
+    y2 = (x1*w3) + (x2*w4) + (2*b2)
+    E = (y1 - y1T)**2 /2 + (y2 - y2T)**2 / 2
+    y1E = y1 - y1T
+    y2E = y2 - y2T
+    w1E = y1E*x1
+    w2E = y1E*x2
+    b1E = y1E*1
+    w3E = y2E*x1
+    w4E = y2E*x2
+    b2E = y2E*1
+    w1 -= lr*w1E
+    w2 -= lr*w2E
+    b1 -= lr*b1E
+    w3 -= lr*w3E
+    w4 -= lr*w4E
+    b2 -= lr*b2E
+    
+    print(f'epoch = {epoch}')
+    print(f' y1 : {y1:.3f}')
+    print(f' y2 : {y2:.3f}')
+    print(f' w1 : {w1:.3f}')
+    print(f' w2 : {w2:.3f}')
+    print(f' b1 : {b1:.3f}')
+    print(f' w3 : {w3:.3f}')
+    print(f' w4 : {w4:.3f}')
+    print(f' b2 : {b2:.3f}')
+    
+    if E < 0.0000001:
+        break;
+
+```
+
+<img width="936" height="382" alt="image" src="https://github.com/user-attachments/assets/897c3683-4337-4048-a183-570b2c4d6055" />
+
+
+### 입력2 출력3
+
+<img width="896" height="513" alt="image" src="https://github.com/user-attachments/assets/7de92a47-5758-4364-b79b-fddfc0107f3c" />
+
+- lr = 0.01
+
+```python
+x1, x2 = 0.05, 0.10
+w1, w2 = 0.15, 0.20
+w3, w4 = 0.25, 0.30
+w5, w6 = 0.40, 0.55
+b1, b2, b3 = 0.35, 0.45, 0.60
+y1T, y2T, y3T = 0.01, 0.99, 0.50
+lr = 0.01
+
+for epoch in range(1000):
+    
+    y1 = (x1*w1) + (x2*w2) + (1*b1)
+    y2 = (x1*w3) + (x2*w4) + (1*b2)
+    y3 = (x1*w5) + (x2*w6) + (1*b3)
+    #E = (((y1 - y1T)**2)/2) + (((y2 - y2T)**2)/2) + (((y3-y3T)**2) /2) #미분 평의성
+    E = (((y1 - y1T)**2) + ((y2 - y2T)**2) + ((y3-y3T)**2)) / 3 # 평균제곱 오차 
+    y1E = y1 - y1T
+    y2E = y2 - y2T
+    y3E = y3 - y3T
+    
+    w1E = y1E*x1
+    w2E = y1E*x2
+    b1E = y1E*1
+    
+    w3E = y2E*x1
+    w4E = y2E*x2
+    b2E = y2E*1
+    
+    w5E = y3E*x1
+    w6E = y3E*x2
+    b3E = y3E*1
+    
+    w1 -= lr*w1E
+    w2 -= lr*w2E
+    b1 -= lr*b1E
+    
+    w3 -= lr*w3E
+    w4 -= lr*w4E
+    b2 -= lr*b2E
+    
+    w5 -= lr*w5E
+    w6 -= lr*w6E
+    b3 -= lr*b3E
+    
+    print(f'epoch = {epoch}')
+    print(f' y1 : {y1:.3f}')
+    print(f' y2 : {y2:.3f}')
+    print(f' y3 : {y3:.3f}')
+    print(f'---------------')
+    print(f' w1 : {w1:.3f}')
+    print(f' w2 : {w2:.3f}')
+    print(f' b1 : {b1:.3f}')
+    print(f'---------------')
+    print(f' w3 : {w3:.3f}')
+    print(f' w4 : {w4:.3f}')
+    print(f' b2 : {b2:.3f}')
+    print(f'---------------')
+    print(f' w5 : {w6:.3f}')
+    print(f' w6 : {w5:.3f}')
+    print(f' b3 : {b3:.3f}')
+    
+    if E < 0.0000001:
+        break;
+
+```
+<img width="779" height="346" alt="image" src="https://github.com/user-attachments/assets/75cd86c3-b306-4aa0-9afd-f30bcf6697c5" />
+
+#### 3입력 2출력
+
+<img width="1014" height="643" alt="image" src="https://github.com/user-attachments/assets/abaec2b7-07e3-47fc-9c9d-91c9d28c88ea" />
+
+- lr = 0.01
+
+<img width="517" height="285" alt="image" src="https://github.com/user-attachments/assets/95cdd10f-5ff9-439d-a7ff-2b9de8e41f9c" />
+
+---
+## 평균제곱 오차 vs 미분편의성 (제2공식)
+ex) 입력2 출력3
+```
+1번 E = (((y1 - y1T)**2)/2) + (((y2 - y2T)**2)/2) + (((y3-y3T)**2) /2)
+2번 E = (((y1 - y1T)**2) + ((y2 - y2T)**2) + ((y3-y3T)**2)) / 3
+```
+1번 - 미분 편의성, 2번 - 평균제곱 오차
+
+
+## 손실 함수: 평균 제곱 오차(MSE)와 1/2 제곱합 오차 비교
+
+두 손실 함수는 모두 예측값과 실제값의 차이를 제곱하여 오차를 계산하는 **제곱 오차(Squared Error)**에 기반하지만, 오차의 총합을 어떤 상수로 나누는지에 따라 그 목적과 해석이 달라집니다.
+
+### 핵심 비교
+
+| 구분 | 평균 제곱 오차 (MSE) | 1/2 제곱합 오차 |
+| :--- | :--- | :--- |
+| **수식** | `E = (1/n) * Σ(y - y_T)²` | `E = (1/2) * Σ(y - y_T)²` |
+| **핵심 목적** | 오차의 통계적 **'평균'** 계산 | 역전파 시 **'미분 계산의 편의성'** |
+| **나누는 값 `n` 또는 `2`의 의미** | `n` = **출력의 개수**<br>(데이터 개수에 따른 평균) | `2` = **고정된 상수**<br>(미분 공식을 위한 수학적 트릭) |
+| **주요 사용처** | • 모델의 성능을 통계적으로 해석<br>• 다른 모델과 성능을 비교<br>• PyTorch, TensorFlow 등 라이브러리의 기본 손실 함수 | • 경사 하강법의 원리를 설명하는 교과서, 논문, 강의<br>• 기울기 계산을 직접 구현할 때 |
+
+---
+
+### 왜 1/2을 곱하는가? (미분과의 관계)
+
+이것이 '미분 편의성'의 핵심 이유입니다.
+
+1.  **기본 제곱 오차항**
+    하나의 출력에 대한 제곱 오차는 `E = (y - y_T)²` 입니다.
+
+2.  **기본 오차항의 미분**
+    역전파 시, 이 오차를 예측값 `y`에 대해 미분하여 기울기(gradient)를 구해야 합니다. 연쇄 법칙(chain rule)에 따라 미분하면 다음과 같습니다.
+    
+    `dE/dy = 2 * (y - y_T)¹ * (y의 미분)`
+    
+    `dE/dy = 2 * (y - y_T)`
+    
+    결과적으로 기울기 앞에 숫자 `2`가 붙게 됩니다.
+
+3.  **1/2을 적용한 오차항의 미분**
+    이제 오차 함수를 `E = (1/2) * (y - y_T)²` 라고 정의해 보겠습니다. 이것을 `y`에 대해 미분하면,
+    
+    `dE/dy = (1/2) * 2 * (y - y_T)`
+    
+    `dE/dy = y - y_T`
+    
+    앞에 곱해진 `1/2`과 미분해서 나온 `2`가 서로 약분되어 사라지면서, 기울기가 `y - y_T` 라는 매우 깔끔한 형태로 남게 됩니다. 이처럼 공식을 단순화하여 이론을 설명하고 계산을 편리하게 만들기 위해 `1/2`을 곱해주는 것입니다.
+
+---
+
+### 언제 무엇을 사용해야 할까?
+
+*   **평균 제곱 오차 (MSE)**: 모델의 성능을 최종적으로 보고하거나, 다른 모델과 성능을 객관적으로 비교하고 싶을 때 사용합니다. 출력 개수가 다른 모델이라도 '평균' 오차를 비교할 수 있기 때문입니다. **실제 코드 구현에서는 라이브러리의 기본값인 MSE를 사용하는 것이 가장 일반적입니다.**
+    *    평균 제곱 오차는 보통 회귀(Regression) 문제에 사용됩니다. 회귀란, 연속적인 숫자 값을 예측하는 문제입니다. (예: 집값 예측, 주가 예측)
+
+*   **1/2 제곱합 오차**: 주로 이론적인 배경을 설명하거나 학습할 때 등장합니다. 실제 최적화 과정에서는 어떤 상수를 곱하든 학습률(learning rate)이 그 차이를 흡수하므로 최종 결과에는 큰 영향을 미치지 않습니다. 하지만 '왜 2로 나누는가?'에 대한 질문에는 '미분을 깔끔하게 만들기 위해서'라고 이해하는 것이 핵심입니다.
