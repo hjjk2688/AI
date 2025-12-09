@@ -47,10 +47,13 @@ b : 편향 (민감도)
 
 ## 퍼셉트론의 이해
 
-<img width="532" height="275" alt="image" src="https://github.com/user-attachments/assets/1529e1a4-991f-4d49-80b0-a5e0126bd39d" />
-<img width="625" height="212" alt="image" src="https://github.com/user-attachments/assets/b45b3725-a741-4798-b6f5-d0389c6b45cd" />
-
-<img width="481" height="137" alt="image" src="https://github.com/user-attachments/assets/c163e4d1-a2e9-473a-bc16-4a6e60659c8e" />
+<table>
+    <tr>
+        <td><img width="532" height="275" alt="image" src="https://github.com/user-attachments/assets/1529e1a4-991f-4d49-80b0-a5e0126bd39d" /></td>
+        <td><img width="625" height="212" alt="image" src="https://github.com/user-attachments/assets/b45b3725-a741-4798-b6f5-d0389c6b45cd" /></td>
+        <td><img width="481" height="137" alt="image" src="https://github.com/user-attachments/assets/c163e4d1-a2e9-473a-bc16-4a6e60659c8e" /></td>
+    </tr>
+</table>
 
 - w : 가중치 , t : 역치(낮으면 쉽게 넘어가고 높으면 넘어가기어렵다.)
 
@@ -69,9 +72,12 @@ b : 편향 (민감도)
 
 - XOR 게이트를 NAND, OR, AND 게이트를 조합하여 해결
 
-<img width="1231" height="246" alt="image" src="https://github.com/user-attachments/assets/5a8d388b-9fae-4361-9e7e-24fcc1ef994b" />
-
-<img width="825" height="270" alt="image" src="https://github.com/user-attachments/assets/013cad7d-29ec-4218-ae04-1f96f1196c31" />
+<table>
+    <tr>
+        <td><img width="1231" height="246" alt="image" src="https://github.com/user-attachments/assets/5a8d388b-9fae-4361-9e7e-24fcc1ef994b" /></td>
+        <td><img width="825" height="270" alt="image" src="https://github.com/user-attachments/assets/013cad7d-29ec-4218-ae04-1f96f1196c31" /></td>
+    </tr>
+</table>
 
 ```text
 다층 퍼셉트론은 입력층, 은닉층, 출력층으로 구성된 모델입니다.
@@ -136,3 +142,57 @@ E = (7 – 10)*(7 – 10)/2 = (-3)*(-3)/2 = 9/2 = 4.5
 ```
 
 ## 제 3 공식 : 역전파 오차
+
+- E에 대한 y의 기울기(미분)
+
+<img width="265" height="48" alt="image" src="https://github.com/user-attachments/assets/1932e757-0d04-4471-8a75-a2d1a74255e9" />
+
+- yE(델다E/델타y) : 역전파 오차, y : 순전파에 의한 예측값, yT : 목표값(라벨)
+- yE의 정확한 의미는 y에 대한 오차 E의 순간변화율을 의미하며 편미분을 통해 유도
+
+#### y = 7 , y 가 10이 나오게 하고싶을때
+- y값이 10이 되려면 3이 모자랍니다. y의 오차는 w와 b의 오차로 인해 발생합니다. 따라서 w와 b값을 적당히 증가시키면 y로 10에 가까운 값이 나오게 할 수 있다.
+
+<table>
+    <tr>
+        <td><img width="629" height="285" alt="image" src="https://github.com/user-attachments/assets/8560464e-2520-4d24-ab6c-47b92170e35f" /></td>
+        <td><img width="697" height="320" alt="image" src="https://github.com/user-attachments/assets/6f5a6dce-8165-4e04-aaed-ebacac2fe784" /></td>
+    </tr>
+</table>
+
+## 제 4 공식 : 입력 역전파
+
+<img width="1034" height="297" alt="image" src="https://github.com/user-attachments/assets/59591e8a-97be-4514-b95d-2793b8c1c7e1" />
+
+- xE는 입력 역전파, yE는 역전파 오차로 딥러닝 제 3 공식에서 구한 값입니다. 회색으로 표시된 1E는 숫자 1의 오차라는 의미로 사용하지 않는 부분입니다. 
+  딥러닝 제 4 공식은 다음과 같은 순서로 유도할 수 있습니다.
+
+1. 딥러닝 제 1 공식의 그림을 복사합니다.
+2. y -> yE, x -> xE로 변경합니다.
+3. 화살표 방향을 반대로 합니다.
+4. 1E, b는 사용하지 않습니다.
+
+<img width="822" height="299" alt="image" src="https://github.com/user-attachments/assets/d9fada67-dce5-4aa6-8660-9f1dba2200a4" />
+
+```
+순전파에서 x는 w를 따라서 y로 전파됩니다. y로 전파된 예측 값은 목표 값과 비교하는 과정에서 오차(yE)가 발생합니다.
+발생한 오차는 궁극적으로 0이 되도록 만들어야 합니다. 그러기 위해서 오차를 어딘가로 보내야 하는데, 어디로 보내야 할까요?
+답은 순전파에서 통로로 사용된 w를 따라서 거꾸로 전파(xE)합니다.
+```
+
+## 제 5 공식 : 가중치, 편향 순전파
+
+<img width="974" height="328" alt="image" src="https://github.com/user-attachments/assets/c5be0b8c-574d-4deb-ae92-b83668fe6761" />
+
+- 딥러닝 제 5공식 유도
+
+1. 딥러닝 제 1 공식을 복사합니다.
+2. x와 w, 1과 b를 교환하여 딥러닝 제 5 공식을 유도합니다.
+3. 딥러닝 제 1 공식의 그림과 같은 형태로 그림을 그립니다.
+
+<img width="822" height="243" alt="image" src="https://github.com/user-attachments/assets/8ef55772-545c-4965-9619-1d9ba30973c4" />
+
+## 제 6 공식 : 가중치, 편향 역전파
+
+<img width="801" height="256" alt="image" src="https://github.com/user-attachments/assets/4241bf25-0b32-4866-b6bf-fe19793591b3" />
+
