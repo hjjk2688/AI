@@ -196,3 +196,60 @@ E = (7 – 10)*(7 – 10)/2 = (-3)*(-3)/2 = 9/2 = 4.5
 
 <img width="801" height="256" alt="image" src="https://github.com/user-attachments/assets/4241bf25-0b32-4866-b6bf-fe19793591b3" />
 
+- wE : 가중치 역전파 오차, bE : 편향 역전파 오차, yE : 역전파 오차(제 3공식에서 구한값)
+
+- 딥러닝 제 6 공식 유도
+
+1. 딥러닝 제 5 공식의 그림을 복사합니다.
+2. y -> yE, w -> wE, b –> bE로 변경합니다.
+3. 화살표 방향을 반대로 합니다.
+
+<img width="843" height="270" alt="image" src="https://github.com/user-attachments/assets/fe9cd7d7-2af0-4505-bd16-8c2869ad13a8" />
+
+## 제 7 공식 : 신경망 학습 
+
+<img width="317" height="118" alt="image" src="https://github.com/user-attachments/assets/03e02827-55ed-442a-aad7-b34e205665e4" />
+
+- lr : 학습률(learning rate), wE: 가중치 역전파 오차, bE: 편향 역전파 오차
+- 제 7 공식은 경사하강법, 미분을 이용하여 얻은 공식
+
+#### 학습률 정하는법
+
+- 학습률의 역할은 '경사 하강법'이라는 언덕 내려가기 게임에서 보폭(step size)을 얼마나 크게 할지 결정하는것과 같습니다.
+    - 학습률이 너무 크면: 보폭이 너무 커서 언덕의 가장 낮은 지점(최적점)을 휙 지나쳐 버리거나, 오히려 반대편으로 넘어가 발산해버릴 수 있습니다. (학습 실패)
+    - 학습률이 너무 작으면: 보폭이 너무 작아서 언덕을 내려가는 데 시간이 매우 오래 걸리거나,
+      넓고 평평한 최적점에 도달하기 전에 좁고 움푹 팬 곳(지역 최적점, local minimum)에 갇혀버릴 수 있습니다.
+
+>일반적으로는 `0.01` 또는 `0.001` 로 시작해서 결과를 보고 조절하는 경우가 가장 많습니다 (보통 adam 사용)
+
+```python
+x = 2
+w = 3
+b = 1
+yT = 10
+lr = 0.01
+
+for epoch in range(250):
+    
+    y = (x*w) + (1*b)
+    E = (y - yT)**2 / 2
+    yE = y - yT
+    wE = yE*x
+    bE = yE*1
+    w -= lr*wE
+    b -= lr*bE
+    
+    print(f'epoch = {epoch}')
+    print(f' y : {y:.3f}')
+    print(f' w : {w:.3f}')
+    print(f' b : {b:.3f}')
+
+```
+- epoch = 200일때 목표 10 달성
+
+<img width="759" height="172" alt="image" src="https://github.com/user-attachments/assets/7e261b17-e732-4286-bc91-9f84b2de42ae" />
+
+- lr = 0.05 변경 epoch = 27에 목표에 거의 근사
+
+<img width="774" height="161" alt="image" src="https://github.com/user-attachments/assets/ba9f7779-68fa-457f-bf3d-70de222020fa" />
+
