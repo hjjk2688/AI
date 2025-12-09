@@ -75,7 +75,12 @@ b : 편향 (민감도)
 
 이처럼 b는 입력과 독립적으로 뉴런의 기본 활성도를 조절하기 때문에, 그냥 더해지는 형태로 사용됩니다.
 ```
-
+#### 편향값에 곱해준는 상수가 항상 1인 이유
+```
+y = w*x + b 라는 식에서 b는 입력(`x`)이 얼마이든 상관없이 결과에 더해지는 값입니다. 이러한 역할을
+수학적으로 가장 깔끔하게 표현하는 방법이 바로 "크기가 1인 가상의 입력이 항상 존재하고, 그 입력에 대한
+가중치가 b이다"라고 생각하는 것입니다.
+```
 ### 퍼셉트론의 한계 : XOR
 
 <img width="1240" height="355" alt="image" src="https://github.com/user-attachments/assets/2c6b36ab-dad2-41d5-8964-9087dc91e652" />
@@ -537,3 +542,81 @@ ex) 입력2 출력3
     *    평균 제곱 오차는 보통 회귀(Regression) 문제에 사용됩니다. 회귀란, 연속적인 숫자 값을 예측하는 문제입니다. (예: 집값 예측, 주가 예측)
 
 *   **1/2 제곱합 오차**: 주로 이론적인 배경을 설명하거나 학습할 때 등장합니다. 실제 최적화 과정에서는 어떤 상수를 곱하든 학습률(learning rate)이 그 차이를 흡수하므로 최종 결과에는 큰 영향을 미치지 않습니다. 하지만 '왜 2로 나누는가?'에 대한 질문에는 '미분을 깔끔하게 만들기 위해서'라고 이해하는 것이 핵심입니다.
+
+---
+
+## 2입력 2 은닉 2출력 인공 신공망
+
+<table>
+    <tr>
+        <td><img width="801" height="433" alt="image" src="https://github.com/user-attachments/assets/27a1117d-d08b-4283-a4e5-6668045bb6bd" /></td>        
+        <td><img width="806" height="339" alt="image" src="https://github.com/user-attachments/assets/0ca8e9ac-ed9c-4beb-900c-a9eca2189413" /></td>
+    </tr>   
+</table>
+
+```python
+x1, x2 = 0.05, 0.10
+w1, w2 = 0.15, 0.20
+w3, w4 = 0.25, 0.30
+w5, w6 = 0.40, 0.45
+w7, w8 = 0.50, 0.55
+b1, b2, b3, b4 = 0.35, 0.35, 0.60, 0.60
+y1T, y2T= 0.01, 0.99
+lr = 0.01
+
+for epoch in range(1000):
+    
+    h1 = (x1*w1) + (x2*w2) + (1*b1)
+    h2 = (x1*w3) + (x2*w4) + (1*b2)
+    
+    y1 = (h1*w5) + (h2*w6) + (1*b3)
+    y2 = (h1*w7) + (h2*w8) + (1*b4)
+    
+    E = ((y1 - y1T)**2) / 2  + ((y2 - y2T)**2) / 2
+    
+    y1E = y1 - y1T
+    y2E = y2 - y2T
+  
+    h1E = (y1E*w5) + (y2E*w7) 
+    h2E = (y1E*w6) + (y1E*w8)
+    
+    w5E = y1E*h1
+    w6E = y1E*h2
+    w7E = y2E*h1
+    w8E = y2E*h2
+    b3E = y1E*1
+    b4E = y2E*1
+    
+    w1E = h1E*x1
+    w2E = h1E*x2
+    w3E = h1E*x1
+    w4E = h1E*x2
+    b1E = h1E*1
+    b2E = h2E*1
+    
+    w5 -= lr*w5E
+    w6 -= lr*w6E
+    w7 -= lr*w7E
+    w8 -= lr*w8E
+    b3 -= lr*b3E
+    b4 -= lr*b4E
+    
+    w1 -= lr*w1E
+    w2 -= lr*w2E
+    w3 -= lr*w3E
+    w4 -= lr*w4E
+    b1 -= lr*b1E
+    b2 -= lr*b2E
+    
+
+    print(f'epoch = {epoch}')
+    print(f' y1 : {y1:.3f}')
+    print(f' y2 : {y2:.3f}')
+    
+    if E < 0.0000001:
+        break;
+
+```
+
+<img width="501" height="152" alt="image" src="https://github.com/user-attachments/assets/a6ab7830-f56b-40cb-bbae-505f4d00cbba" />
+
