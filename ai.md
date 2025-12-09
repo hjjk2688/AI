@@ -245,11 +245,41 @@ for epoch in range(250):
     print(f' b : {b:.3f}')
 
 ```
+
 - epoch = 200일때 목표 10 달성
 
 <img width="759" height="172" alt="image" src="https://github.com/user-attachments/assets/7e261b17-e732-4286-bc91-9f84b2de42ae" />
 
+<img width="833" height="193" alt="image" src="https://github.com/user-attachments/assets/1e652bb2-e5ff-4cf8-a746-ab38a11a1770" />
+
 - lr = 0.05 변경 epoch = 27에 목표에 거의 근사
 
 <img width="774" height="161" alt="image" src="https://github.com/user-attachments/assets/ba9f7779-68fa-457f-bf3d-70de222020fa" />
+
+#### 오차 E가 충분히 작아 지면 학습 중단 코드 추가
+```python
+x = 2
+w = 3
+b = 1
+yT = 10
+lr = 0.01
+
+for epoch in range(250):
+    
+    y = (x*w) + (1*b)
+    E = (y - yT)**2 / 2
+    yE = y - yT
+    wE = yE*x
+    bE = yE*1
+    w -= lr*wE
+    b -= lr*bE
+    
+    print(f'epoch = {epoch}')
+    print(f' y : {y:.3f}')
+    print(f' w : {w:.3f}')
+    print(f' b : {b:.3f}')
+
+    if E < 0.0000001 :
+    break
+```
 
