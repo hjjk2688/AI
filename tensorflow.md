@@ -142,7 +142,7 @@ model.compile(optimizer='sgd', loss='mse')
 - optimizer: 확률적 경사하강법(sgd)
   - 손실 함수가 만든 지형을 보고, 가장 낮은 곳으로 가기 위해 가중치를 수정하는 '행동 규칙'
   - (예: 한 걸음씩 조심해서 내려가기(SGD), 관성을 이용해 미끄러져 내려가기(Momentum), 지형에 맞춰 보폭을 조절하며 내려가기(Adam))
-- loss: 손실함수 평균제곱오차(mse)
+- loss: 손실함수 - 평균제곱오차(mse)
   - 현재 모델이 얼마나 잘못되었는지(오차)를 측정하는 '평가 기준'입니다. 
  
 ```tensorflow
@@ -541,7 +541,7 @@ plt.show()
 
 <img width="500" height="600" alt="image" src="https://github.com/user-attachments/assets/d2500e8b-abda-42f5-8b2c-c5ce36edb58c" />
 
-<img width="400" height="339" alt="image" src="https://github.com/user-attachments/assets/d6bc3e4b-dc61-4d2e-a818-694508eece95" />
+<img width="500" height="339" alt="image" src="https://github.com/user-attachments/assets/d6bc3e4b-dc61-4d2e-a818-694508eece95" />
 
 
 - 학습에 따라 오차율이 점점 줄어드는걸 확인 할 수 있다.
