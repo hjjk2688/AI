@@ -787,4 +787,4 @@ model=tf.keras.Sequential([ tf.keras.Input(shape=(2,)),
 2. default 랑 linear 함수랑 같은가?
 3. 출력층의 활성화 함수에 따라 학습 속도가 달라지는 이유
 
-
+https://github.com/hjjk2688/AI/blob/main/activation_function.md
