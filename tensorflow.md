@@ -1,4 +1,4 @@
-# Tensorflow
+<img width="875" height="948" alt="image" src="https://github.com/user-attachments/assets/b6fc92bd-d097-4a81-b8ee-6371ef253a65" /># Tensorflow
 ## TensorFlow 와 Keras
 
 케라스(Keras)가 텐서플로우의 공식적인 고급 API(High-level API)
@@ -393,3 +393,113 @@ Y= model.predict(X)
 print('Y=',Y)
 
 ```
+
+---
+
+## w, b, E 관계
+```python
+np.random.uniform(-200, 200, 10000)
+```
+매우 넓은 범위(-200 ~ 200)에 걸쳐 수많은 경우의   수(10,000개)를 무작위로 샘플링
+
+<img width="828" height="60" alt="image" src="https://github.com/user-attachments/assets/97166a42-1e92-41a0-a6eb-2d2ceeaf34d4" />
+
+- w = np.random.uniform(-2, 2, 4)
+- b = np.random.uniform(-2, 2, 4)
+> -2이상 2미만 범위에서 4개의 값 샘플링
+
+#### basic
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+fig = plt.figure(figsize = (8,8))
+ax = fig.add_subplot(projection='3d')
+ax.set_title("wbE", size = 20)
+
+ax.set_xlabel("w", size = 14)
+ax.set_xlabel("b", size = 14)
+ax.set_xlabel("E", size = 14)
+
+x = 2
+yT = 10
+
+w = np.random.uniform(-200, 200, 10000)
+b = np.random.uniform(-200, 200, 10000)
+
+y = (x*w) + b
+E = ((y-yT)**2) / 2
+
+ax.plot(w, b, E, 'g.')
+plt.show()
+```
+
+<img width="875" height="948" alt="image" src="https://github.com/user-attachments/assets/d34ad0f9-ba83-4063-90bf-a4c7ecb3fcb8" />
+
+####  학습 과정 살펴보기
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+fig = plt.figure(figsize = (8,8))
+ax = fig.add_subplot(projection='3d')
+ax.set_title("wbE", size = 20)
+
+ax.set_xlabel("w", size = 14)
+ax.set_xlabel("b", size = 14)
+ax.set_xlabel("E", size = 14)
+
+x = 2
+yT = 10
+
+w = np.random.uniform(2, 7, 10000)
+b = np.random.uniform(0, 4, 10000)
+
+y = (x*w) + b
+E = ((y-yT)**2) / 2
+
+ax.plot(w, b, E, 'g.')
+
+x = 2
+w = 3
+b = 1
+yT = 10
+lr = 0.01
+
+wbEs = []
+EPOCHS = 200
+
+for epoch in range(EPOCHS):
+        y = x*w + 1*b
+        E = (y - yT)**2 /2
+        yE = y - yT
+        wE = yE * x
+        bE = yE *1
+        w -= lr*wE
+        b -= lr*bE
+        
+        wbEs.append(np.array([w,b,E]))
+
+data = np.array(wbEs).T
+line, = ax.plot([],[],[],'r')
+
+def animate(epoch, data, line):
+    print(epoch, data[2, epoch])
+    line.set_data(data[:2, :epoch])
+    line.set_3d_properties(data[2,:epoch])
+
+from matplotlib.animation import FuncAnimation
+
+ani = FuncAnimation(fig, animate, EPOCHS, fargs=(data, line), interval=20000/EPOCHS)
+
+
+plt.show()
+
+```
+
+<img width="881" height="938" alt="image" src="https://github.com/user-attachments/assets/d2500e8b-abda-42f5-8b2c-c5ce36edb58c" />
+
+<img width="569" height="290" alt="image" src="https://github.com/user-attachments/assets/802cc751-cb04-4be4-9abb-7260d8763dd3" />
+
+- 학습에 따라 오차율이 점점 줄어드는걸 확인 할 수 있다.
