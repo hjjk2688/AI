@@ -416,6 +416,7 @@ Y = model.predict(X)
 print(Y)
 
 early_stopping = tf.keras.callbacks.EarlyStopping(monitor='loss', patience=10)
+#early_stopping = tf.keras.callbacks.EarlyStopping(monitor='loss',  min_delta=1e-7,.patience=5) # 0.0000001. 이 값보다 작은 변화는 '개선'으로 치지 않음
 
 # validation_data를 함께 제공해야 monitor='val_loss'를 사용할 수 있음
 model.fit(X,YT,
@@ -549,4 +550,241 @@ plt.show()
 ---
 
 ## 활성화 함수
-- 활성화 함수는 '뉴런 하나'가 어떻게 반응할지를 결정하고, 옵티마이저는 '모델 전체'가 어떻게 더 똑똑해질지를 결정합니다.
+활성화 함수는 '뉴런 하나'가 어떻게 반응할지를 결정하고, 옵티마이저는 '모델 전체'가 어떻게 더 똑똑해질지를 결정합니다.
+
+1.  Sigmoid : 
+- 입력값이 아무리 크더라도 출력값의 범위가 0에서 1사이로 매우 작아 신경망을 거칠수록 출력값은 점점더 작아져 0에 수렴하게 됩니다.
+
+<img width="858" height="207" alt="image" src="https://github.com/user-attachments/assets/846a5842-55c8-4d2b-a4d3-89468acf33d7" />
+
+---
+2.  ReLU(Rectified Linear Unit)
+- ReLU 함수의 경우 입력값이 음수가 될 경우 출력이 0이 되기 때문에 이런 경우에는 어떤 노드를 완전히 죽게 하여 어떤 것도 학습하지 않게 합니다.
+
+<img width="823" height="243" alt="image" src="https://github.com/user-attachments/assets/dc412ab1-c28b-44a0-b58b-950694772a52" />
+
+---
+3.  Softmax
+- 소프트맥스 활성화 함수는 시그모이드 활성화 함수가 더욱 일반화된 형태
+- 시그모이드 함수와 비슷하게 이것은 0에서 1사이의 값들을 생성합니다. 소프트맥스 함수는 은닉층에서는 사용하지 않으며, 다중 분류(classification) 모델에서 출력층에서만 사용합니다.
+
+<img width="477" height="259" alt="image" src="https://github.com/user-attachments/assets/a2d33418-f6ec-48e5-bff9-50160191e2d9" />
+
+**일반적으로 은닉층에는 ReLU 함수를 적용하고, 출력층은 시그모이드 함수나 소프트맥스 함수를 적용합니다.**
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+def sigmoid(x):
+    return 1/(1+np.exp(-x))
+
+def ReLU(x):
+    return x*(x>0)
+
+def step(x):
+    return x>0
+
+fig, axes = plt.subplots(3, 1, figsize=(8, 12)) # fig는 전체 창, axes는 각 그래프를 그릴 3개의 구역(도화지) 3행 1열
+fig.suptitle("Activation Functions", size=20) # 전체 창의 제목
+
+x_sigmoid = np.random.uniform(-10, 10, 1000)
+y_sigmoid = sigmoid(x_sigmoid)
+axes[0].plot(x_sigmoid, y_sigmoid, 'r.')
+axes[0].set_title("Sigmoid Function")
+axes[0].grid(True)
+
+x_relu = np.random.uniform(-10, 10, 1000)
+y_relu = ReLU(x_relu)
+axes[1].plot(x_relu, y_relu, 'g.')
+axes[1].set_title("ReLU Function")
+axes[1].grid(True)
+
+x_step  = np.random.uniform(-10, 10, 1000)
+y_step  = step (x_step )
+axes[2].plot(x_step , y_step , 'b.')
+axes[2].set_title("Step  Function")
+axes[2].grid(True)
+plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+plt.show()
+
+```
+<img width="1910" height="1022" alt="image" src="https://github.com/user-attachments/assets/13b08218-69ab-4049-9541-73fec0c27270" />
+
+```
+np.exp(x)
+```
+---
+#### exp()
+- NumPy 라이브러리의 exp() 함수는 입력받은 숫자 또는 배열 x의 모든 요소에 대해 eˣ (e의 x제곱) 값을 계산해줍니다.
+
+그래서 어디에 쓰이나요? → 소프트맥스(Softmax) 함수
+
+이 두 가지 마법은 분류 모델의 마지막 단계인 소프트맥스(Softmax) 함수에서 완벽하게 활용됩니다.
+
+
+상황: 모델이 '개', '고양이', '새' 사진을 보고 각각의 점수를 [개=1, 고양이=3, 새=0.5] 라고 예측했습니다.
+우리는 이 점수를 '확률'로 바꾸고 싶습니다.
+
+
+ 1. `exp()` 적용 (마법 1 + 마법 2)
+     * 점수 [1, 3, 0.5]에 exp()를 적용해서 모두 양수로 만들고, 가장 점수가 높은 '고양이'를 확실한
+       주인공으로 부각시킵니다.
+     * exp([1, 3, 0.5]) => [2.7, 20.1, 1.6]
+
+
+ 2. 전체 합으로 나누기 (정규화)
+     * 위에서 나온 값들을 모두 더합니다: 2.7 + 20.1 + 1.6 = 24.4
+     * 각각의 값을 전체 합으로 나누어, 총합이 1인 확률로 만듭니다.
+     * [2.7/24.4, 20.1/24.4, 1.6/24.4] => [0.11, 0.82, 0.07]
+
+
+최종 결과: 모델은 이 사진이 '개'일 확률 11%, '고양이'일 확률 82%, '새'일 확률 7%라고 최종 결론을
+내립니다.
+
+
+결론적으로 np.exp()는 어떤 숫자든 양수로 바꾸고, 그중 가장 큰 값을 더 특별하게 강조하는 두 가지 강력한
+특징 때문에, 여러 점수들을 명확한 '확률'로 바꿔야 하는 머신러닝 분류 문제에서 필수적인 함수로 사용됩니다
+
+---
+
+## activivation function
+
+<img width="595" height="334" alt="image" src="https://github.com/user-attachments/assets/0a89537f-fc8c-48ce-ab9c-cbca3c32101a" />
+
+```python
+from math import exp
+x1, x2 = 0.05, 0.10
+w1, w2 = 0.15, 0.20
+w3, w4 = 0.25, 0.30
+w5, w6 = 0.40, 0.45
+w7, w8 = 0.50, 0.55
+b1, b2, b3, b4 = 0.35, 0.35, 0.60, 0.60
+y1T, y2T= 0.01, 0.99
+lr = 0.01
+
+EPOCH = 1000
+
+for epoch in range(EPOCH):
+    
+    h1 = (x1*w1) + (x2*w2) + (1*b1)
+    h2 = (x1*w3) + (x2*w4) + (1*b2)
+    
+    #ReLU feed forward
+    h1 = h1 if h1 > 0 else 0
+    h2 = h2 if h2 > 0 else 0
+    
+    
+    y1 = (h1*w5) + (h2*w6) + (1*b3)
+    y2 = (h1*w7) + (h2*w8) + (1*b4)
+    
+    #sigmoid feed forward
+    y1 = 1 / (1 + exp(-y1))
+    y2 = 1 / (1 + exp(-y2))
+    
+    E = ((y1 - y1T)**2) / 2  + ((y2 - y2T)**2) / 2
+    
+    y1E = y1 - y1T
+    y2E = y2 - y2T
+    
+    # sigmoid back propagation
+    
+    y1E = y1 * (1-y1) * y1E
+    y2e = y2 * (1-y2) * y2E
+    
+    w5E = y1E*h1
+    w6E = y1E*h2
+    w7E = y2E*h1
+    w8E = y2E*h2
+    b3E = y1E*1
+    b4E = y2E*1
+    
+    h1E = (y1E*w5) + (y2E*w7) 
+    h2E = (y1E*w6) + (y1E*w8)
+    
+    # ReLU back propagation
+    h1E = h1E if h1 > 0 else 0
+    h2E = h2E if h2 > 0 else 0
+
+
+    w1E = h1E*x1
+    w2E = h1E*x2
+    w3E = h1E*x1
+    w4E = h1E*x2
+    b1E = h1E*1
+    b2E = h2E*1
+    
+
+    
+    w5 -= lr*w5E
+    w6 -= lr*w6E
+    w7 -= lr*w7E
+    w8 -= lr*w8E
+    b3 -= lr*b3E
+    b4 -= lr*b4E
+    
+    w1 -= lr*w1E
+    w2 -= lr*w2E
+    w3 -= lr*w3E
+    w4 -= lr*w4E
+    b1 -= lr*b1E
+    b2 -= lr*b2E
+    
+    
+    if epoch % 100 ==99:
+        print(f'epoch = {epoch}')
+        print(f' y1 : {y1:.6f}')
+        print(f' y2 : {y2:.6f}')
+    if E < 0.0000001:
+        break;
+    
+
+print(f'w1,w3 = {w1:.6f},{w3:.6f}')
+print(f'w2,w4 = {w2:.6f},{w4:.6f}')
+print(f'b1,b2 = {b1:.6f},{b2:.6f}')
+print(f'w5,w7 = {w5:.6f},{w7:.6f}')
+print(f'w6,w8 = {w6:.6f},{w8:.6f}')
+print(f'b3,b4 = {b3:.6f},{b4:.6f}')
+```
+
+<img width="417" height="170" alt="image" src="https://github.com/user-attachments/assets/22f054f2-8c50-48a4-88f5-8958cb3efa11" />
+
+---
+
+#### tensorflow에 activation 적용
+
+```python
+model = tf.keras.Sequential([
+    tf.keras.Input(shape=(2,)),
+    tf.keras.layers.Dense(2, activation='relu'), # 은닉층
+    tf.keras.layers.Dense(2, activation='sigmoid') # 출력층
+    
+    ])
+```
+
+<img width="736" height="253" alt="image" src="https://github.com/user-attachments/assets/262d7d8b-8d7f-4443-920c-00a3a0dac21b" />
+
+---
+## 선형함수 
+#### 출력층에 linear 함수 적용
+
+- 출력층에 linear 함수를 적용하면 출력단의 값을 그대로 내보낸다.
+
+
+```
+model=tf.keras.Sequential([ tf.keras.Input(shape=(2,)),
+    tf.keras.layers.Dense(2, activation='relu'),
+    tf.keras.layers.Dense(2, activation='linear') # 출력층 linear 함수 적용
+]) 
+```
+
+<img width="745" height="225" alt="image" src="https://github.com/user-attachments/assets/9f087935-b82e-4256-a2cc-b44456a178f3" />
+
+- epoch = 571 종료
+---
+#### 선형함수에 대한 질문
+1. 선형 함수를 쓰는이유
+2. default 랑 linear 함수랑 같은가?
+3. 출력층의 활성화 함수에 따라 학습 속도가 달라지는 이유
+
+
