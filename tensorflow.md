@@ -700,7 +700,7 @@ for epoch in range(EPOCH):
     b4E = y2E*1
     
     h1E = (y1E*w5) + (y2E*w7) 
-    h2E = (y1E*w6) + (y1E*w8)
+    h2E = (y1E*w6) + (y2E*w8)
     
     # ReLU back propagation
     h1E = h1E if h1 > 0 else 0
@@ -709,8 +709,8 @@ for epoch in range(EPOCH):
 
     w1E = h1E*x1
     w2E = h1E*x2
-    w3E = h1E*x1
-    w4E = h1E*x2
+    w3E = h2E*x1
+    w4E = h2E*x2
     b1E = h1E*1
     b2E = h2E*1
     
@@ -792,3 +792,119 @@ https://github.com/hjjk2688/AI/blob/main/activation_function.md
 ---
 
 ## Softmax & cross entropy
+```python
+from math import exp , log
+x1, x2 = 0.05, 0.10
+w1, w2 = 0.15, 0.20
+w3, w4 = 0.25, 0.30
+w5, w6 = 0.40, 0.45
+w7, w8 = 0.50, 0.55
+b1, b2, b3, b4 = 0.35, 0.35, 0.60, 0.60
+
+#y1T, y2T= 0.01, 0.99
+y1T, y2T= 0., 1. # cross entropy 손실 함수 - 목표 1 나머지 0
+
+lr = 0.01
+
+EPOCH = 10000
+
+for epoch in range(EPOCH):
+    
+    h1 = (x1*w1) + (x2*w2) + (1*b1)
+    h2 = (x1*w3) + (x2*w4) + (1*b2)
+    
+    #ReLU feed forward
+    h1 = h1 if h1 > 0 else 0
+    h2 = h2 if h2 > 0 else 0
+    
+    
+    y1 = (h1*w5) + (h2*w6) + (1*b3)
+    y2 = (h1*w7) + (h2*w8) + (1*b4)
+    
+    #softmax feed forward
+    yMax = y1 if y1 > y2 else y2
+    y1 -= yMax
+    y2 -= yMax
+    sumY = exp(y1) + exp(y2)
+    y1 = exp(y1)/sumY
+    y2 = exp(y2)/sumY
+    
+    E = -((y1T * log(y1)) + (y2T * log(y2))) # cross entropy 오차율 
+    
+    y1E = y1 - y1T
+    y2E = y2 - y2T
+    
+    # softmax back propagation
+    # do nothing
+      
+    w5E = y1E*h1
+    w6E = y1E*h2
+    w7E = y2E*h1
+    w8E = y2E*h2
+    b3E = y1E*1
+    b4E = y2E*1
+    
+    h1E = (y1E*w5) + (y2E*w7) 
+    h2E = (y1E*w6) + (y2E*w8)
+    
+    # ReLU back propagation
+    h1E = h1E if h1 > 0 else 0
+    h2E = h2E if h2 > 0 else 0
+
+
+    w1E = h1E*x1
+    w2E = h1E*x2
+    w3E = h2E*x1
+    w4E = h2E*x2
+    b1E = h1E*1
+    b2E = h2E*1
+    
+    w5 -= lr*w5E
+    w6 -= lr*w6E
+    w7 -= lr*w7E
+    w8 -= lr*w8E
+    b3 -= lr*b3E
+    b4 -= lr*b4E
+    
+    w1 -= lr*w1E
+    w2 -= lr*w2E
+    w3 -= lr*w3E
+    w4 -= lr*w4E
+    b1 -= lr*b1E
+    b2 -= lr*b2E
+    
+    
+    if epoch % 100 == 99:
+        print(f'epoch = {epoch}')
+        print(f' y1 : {y1:.6f}')
+        print(f' y2 : {y2:.6f}')
+    
+    if E < 0.0000001:
+        break;
+    
+
+print(f'w1,w3 = {w1:.6f},{w3:.6f}')
+print(f'w2,w4 = {w2:.6f},{w4:.6f}')
+print(f'b1,b2 = {b1:.6f},{b2:.6f}')
+print(f'w5,w7 = {w5:.6f},{w7:.6f}')
+print(f'w6,w8 = {w6:.6f},{w8:.6f}')
+print(f'b3,b4 = {b3:.6f},{b4:.6f}')
+
+```
+<img width="579" height="259" alt="image" src="https://github.com/user-attachments/assets/5285c996-d29b-4045-a161-95c99a4b6c21" />
+
+#### tensorflow에 적용하기
+- activation 함수 변경: softmax
+- loss 함수 변경: crosentropy 
+
+```python
+model = tf.keras.Sequential([
+    tf.keras.Input(shape=(2,)),
+    tf.keras.layers.Dense(2, activation='relu'), # 은닉층
+    tf.keras.layers.Dense(2, activation='softmax') # 출력층
+    ])
+
+-- 생략 -- 
+model.compile(optimizer='sgd', loss='categorical_crossentropy') # 평균 제곱 오차 에서 crossentropy 변경
+```
+
