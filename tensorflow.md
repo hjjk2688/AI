@@ -1,4 +1,4 @@
-<img width="875" height="948" alt="image" src="https://github.com/user-attachments/assets/b6fc92bd-d097-4a81-b8ee-6371ef253a65" /># Tensorflow
+# TensorFlow
 ## TensorFlow 와 Keras
 
 케라스(Keras)가 텐서플로우의 공식적인 고급 API(High-level API)
@@ -13,8 +13,8 @@
 - b(편향) - 1차 배열(벡터): 일반적으로 (입력 뉴런 개수, 출력 뉴런 개수) 형태의 shape을 가집니다.
   - 편향은 현재 계층의 각 뉴런에 하나씩 더해지는 값입니다.
 - shape: 행렬의 차원 ( , ) ',' 로 표시
-
-### Shape: 배열의 차원과 크기
+---
+## Shape: 배열의 차원과 크기
 
 `shape`은 배열(행렬)이 각 차원(dimension)에 몇 개의 원소(element)를 가지고 있는지를 알려주는 튜플(tuple)입니다.
 
@@ -35,7 +35,7 @@
     ```
 *   **참고:** `(3)`이 아니라 `(3,)`처럼 쉼표(`,`)가 있는 이유는, 파이썬에서 `(3)`은 그냥 숫자 3이지만 `(3,)`은 원소가 하나인 튜플을 의미하기 때문입니다.
 
----
+
 
 #### 2. 2차원 배열 (행렬, Matrix)
 
@@ -54,9 +54,6 @@
     [[1, 2, 3, 4],
      [5, 6, 7, 8]]
     ```
-
----
-
 #### 3. 3차원 배열 (텐서, Tensor)
 
 이 개념을 확장하면 3차원 이상의 텐서도 표현할 수 있습니다.
@@ -97,7 +94,7 @@
 
 
 ---
-## Dense
+### Dense
 
 #### tf.keras.layers.Dense(2)의 정확한 의미
 
@@ -197,6 +194,50 @@ model.fit(X, YT, epochs=999)
 | **`model.compile()`** | 학습 **규칙/전략** 설정 | 내비게이션 **목적지 및 경로 설정** |
 | **`model.fit()`** | 실제 데이터로 학습 **시작/실행** | **'안내 시작'** 버튼 누르기 |
 
+---
+### Keras 옵티마이저와 학습률(Learning Rate) 설정
+
+- model.compile() 시 optimizer를 설정할 때, 학습률(lr)을 직접 지정하지 않아도 코드가 동작하는 경우가
+있습니다. 이는 케라스(Keras)가 사용자를 위해 기본값(default)을 자동으로 적용해주기 때문입니다.
+
+- 사용자가 모든 세부사항을 지정하지 않아도 코드가 돌아갈 수 있도록, 대부분의 라이브러리는 중요한 파라미터에
+대해 합리적인 기본값을 가지고 있습니다.
+
+
+1. 암시적 방법
+
+```python
+model.compile(optimizer='sgd', loss='mse')
+```
+- 케라스는 '가장 기본적인 SGD 옵티마이저를 기본 설정값으로 사용하라'는 의미로 받아들입니다.
+
+> tf.keras.optimizers.SGD의 기본 학습률은 `0.01` 입니다.
+> 따라서 위 코드는 아래와 같이 학습률을 직접 0.01로 지정한 것과 동일하게 동작합니다.
+
+
+```python
+# optimizer='sgd' 라고 쓴 것은 아래 코드와 같습니다.
+from tensorflow.keras.optimizers import SGD
+
+optimizer_with_defaults = SGD(learning_rate=0.01)
+
+model.compile(optimizer=optimizer_with_defaults, loss='mse')
+```
+
+
+2. 명시적 방법(학습률을 직접 설정하는 방법):
+- 만약 다른 학습률(예: 0.05)을 사용하고 싶다면, 옵티마이저 객체를 직접 만들어서 compile 함수에 전달해야합니다.
+
+```python
+from tensorflow.keras.optimizers import SGD
+
+# 1. 원하는 학습률로 옵티마이저 객체를 직접 생성
+my_optimizer = SGD(learning_rate=0.05)
+
+# 2. compile 할 때 문자열 대신 생성한 객체를 전달
+model.compile(optimizer=my_optimizer, loss='mse')
+```
+---
 
 ## 1입력 1출력 인공 신경망
 
@@ -434,7 +475,7 @@ ax.plot(w, b, E, 'g.')
 plt.show()
 ```
 
-<img width="875" height="948" alt="image" src="https://github.com/user-attachments/assets/d34ad0f9-ba83-4063-90bf-a4c7ecb3fcb8" />
+<img width="500" height="600" alt="image" src="https://github.com/user-attachments/assets/d34ad0f9-ba83-4063-90bf-a4c7ecb3fcb8" />
 
 ####  학습 과정 살펴보기
 
@@ -498,9 +539,9 @@ plt.show()
 
 ```
 
-<img width="881" height="938" alt="image" src="https://github.com/user-attachments/assets/d2500e8b-abda-42f5-8b2c-c5ce36edb58c" />
+<img width="500" height="600" alt="image" src="https://github.com/user-attachments/assets/d2500e8b-abda-42f5-8b2c-c5ce36edb58c" />
 
-<img width="681" height="339" alt="image" src="https://github.com/user-attachments/assets/d6bc3e4b-dc61-4d2e-a818-694508eece95" />
+<img width="400" height="339" alt="image" src="https://github.com/user-attachments/assets/d6bc3e4b-dc61-4d2e-a818-694508eece95" />
 
 
 - 학습에 따라 오차율이 점점 줄어드는걸 확인 할 수 있다.
