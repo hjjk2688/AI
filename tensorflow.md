@@ -500,6 +500,7 @@ plt.show()
 
 <img width="881" height="938" alt="image" src="https://github.com/user-attachments/assets/d2500e8b-abda-42f5-8b2c-c5ce36edb58c" />
 
-<img width="569" height="290" alt="image" src="https://github.com/user-attachments/assets/802cc751-cb04-4be4-9abb-7260d8763dd3" />
+<img width="681" height="339" alt="image" src="https://github.com/user-attachments/assets/d6bc3e4b-dc61-4d2e-a818-694508eece95" />
+
 
 - 학습에 따라 오차율이 점점 줄어드는걸 확인 할 수 있다.
