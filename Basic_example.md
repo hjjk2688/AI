@@ -684,4 +684,4 @@ model.evaluate(x,yt)
 
 <img width="930" height="64" alt="image" src="https://github.com/user-attachments/assets/63595ec2-f57d-49f1-852e-9488e8f9e260" />
 
-> 은닉층이 커진다고 정확도가 드라마틱하게 오르지않음 => 이미지 인식에 강한 신경망으로 변경해야됨
+> 은닉층이 커진다고 정확도가 드라마틱하게 오르지않음 => 이미지 인식에 강한 신경망으로 변경해야됨 (CNN)
