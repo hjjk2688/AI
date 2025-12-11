@@ -644,4 +644,44 @@ cifar-10 데이터 학습에 정확도는 0.4366 으로 많이 낮다. 이렇듯
 
 데이터 크기와 라벨값 확인
 
+데이터 크기 : (50000, 32, 32, 3) (50000, 1) (10000, 32, 32, 3) (10000, 1)
+라벨 : 0 ~ 99
 
+<img width="1852" height="120" alt="image" src="https://github.com/user-attachments/assets/4d8be98d-2f22-4d71-a58d-4d8677722be5" />
+
+#### 학습
+```python
+import tensorflow as tf
+
+mnist = tf.keras.datasets.cifar100
+
+(X, YT), (x, yt) = mnist.load_data()
+X = X.reshape(50000, 32*32*3)/255
+x = x.reshape(10000, 32*32*3)/255
+
+model = tf.keras.Sequential([
+    tf.keras.Input(shape=(32*32*3,)),
+    #tf.keras.layers.Dense(128, activation='relu'),
+    tf.keras.layers.Dense(512, activation='relu'),
+    tf.keras.layers.Dense(100, activation= 'softmax')    
+    
+    ])
+
+model.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+
+model.fit(X,YT, epochs=20)
+model.evaluate(x,yt)
+```
+
+
+은닉층 - 128 , 정확도: 0.0702
+
+<img width="908" height="64" alt="image" src="https://github.com/user-attachments/assets/accba094-63b9-492a-a12e-1d7e43891a2a" />
+
+은닉층 - 512 , 정확도: 0.1513
+
+<img width="930" height="64" alt="image" src="https://github.com/user-attachments/assets/63595ec2-f57d-49f1-852e-9488e8f9e260" />
+
+> 은닉층이 커진다고 정확도가 드라마틱하게 오르지않음 => 이미지 인식에 강한 신경망으로 변경해야됨
