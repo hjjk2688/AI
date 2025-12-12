@@ -521,3 +521,202 @@ plt.show()
 <img width="776" height="289" alt="image" src="https://github.com/user-attachments/assets/fe7fb066-23ad-4f4e-9231-30bb78e9a41c" />
 
 입력의 깊이는 필터의 깊이를 결정하여 필터의 개수는 출력의 깊이를 결정합니다. 
+
+---
+## CNN - Tensorflow
+
+<img width="939" height="348" alt="image" src="https://github.com/user-attachments/assets/b4d67d5f-7636-4f52-aac5-a3425ab105ec" />
+
+# 🧠 CNN 신경망 구조 분석 및 요약
+
+## 📊 단계별 구조 및 크기 변화
+
+| 단계 | 과정 | 입력 크기 | 필터 구성 (Hyperparameter) | 출력 크기 |
+| :---: | :--- | :--- | :--- | :--- |
+| **Image** | 입력 층 | $28 \times 28 \times 1$ | - | $28 \times 28 \times 1$ |
+| **1** | **1차 합성곱 + ReLU** | $28 \times 28 \times 1$ | $3 \times 3 \times 1 \times 32$ | $28 \times 28 \times 32$ |
+| **2** | **2차 합성곱 + ReLU** | $28 \times 28 \times 32$ | $3 \times 3 \times 32 \times 64$ | $28 \times 28 \times 64$ |
+| **3** | **모으기 (Max Pooling)** | $28 \times 28 \times 64$ | $2 \times 2 \times 64$ (풀링 필터) | $14 \times 14 \times 64$ |
+| **4** | **평탄화 (Flatten)** | $14 \times 14 \times 64$ | - | $12,544$ (1차원 벡터) |
+| **Dense** | 완전 연결 계층 | $12,544$ | - | $128$ |
+| **Softmax** | 출력 계층 | $128$ | - | $10$ |
+
+---
+
+## 주요 단계별 상세 분석
+
+### 1. 합성곱 계층 (Convolutional Layers)
+
+* **필터 깊이 규칙:** 필터의 깊이는 **직전 입력 이미지의 깊이**와 반드시 일치해야 합니다.
+    * 1차 합성곱: 입력 깊이 1 $\rightarrow$ 필터 깊이 1
+    * 2차 합성곱: 입력 깊이 32 $\rightarrow$ 필터 깊이 32
+* **필터 개수 결정:** 필터의 개수는 **출력 깊이**를 결정하며, 이는 모델 설계자(하이퍼파라미터)가 선택합니다.
+    * 1차 출력 깊이 32 $\rightarrow$ 필터 개수 32개
+    * 2차 출력 깊이 64 $\rightarrow$ 필터 개수 64개
+
+### 2. 모으기 계층 (Max Pooling)
+
+* **역할:** 데이터의 공간적 크기를 줄여(차원 축소) 연산량을 감소시키고 노이즈에 강인하게 만듭니다.
+* **크기 변화:** $2 \times 2$ 풀링 필터 사용 시, 가로/세로 크기가 $\frac{1}{2}$로 축소됩니다. ($28 \times 28 \rightarrow 14 \times 14$). 깊이(64)는 유지됩니다.
+
+### 3. 평탄화 (Flatten)
+
+* **역할:** 3차원 특징 맵($14 \times 14 \times 64$)을 1차원 벡터로 변환하여 완전 연결 계층(Dense Layer)의 입력으로 전달합니다.
+* **계산:** $14 \times 14 \times 64 = 12,544$
+
+---
+
+```python
+import tensorflow as tf
+
+mnist = tf.keras.datasets.fashion_mnist
+
+(x_train, y_train), (x_test, y_test) = mnist.load_data()
+x_train, x_test = x_train / 255.0, x_test / 255.0
+x_train = x_train.reshape((60000,28,28,1))
+x_test = x_test.reshape((10000,28,28,1))
+
+model = tf.keras.Sequential([
+    tf.keras.layers.InputLayer(input_shape=(28,28,1)), # 입력 28x28x1
+    tf.keras.layers.Conv2D(32,(3,3), activation='relu', padding='same'), # 깊이: 32  ,3x3 , steride:1 , 패딩 출력이랑같이 맞춰준다
+    tf.keras.layers.Conv2D(64,(3,3), activation='relu', padding='same'),
+    tf.keras.layers.MaxPooling2D((2,2)), #max pooling
+    tf.keras.layers.Flatten(), # 다차원 데이터를 1차원의 긴 벡터로 쭉 펼쳐주는 역할
+    tf.keras.layers.Dense(128,activation='relu'), # 완전 연결층은닉층?
+    tf.keras.layers.Dense(10, activation='softmax')
+    
+    ])
+
+model.summary()
+
+model.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+
+model.fit(x_train, y_train, epochs=5)
+
+model.evaluate(x_test, y_test)
+
+```
+
+<img width="793" height="343" alt="image" src="https://github.com/user-attachments/assets/ddf4d1b8-ecbd-4539-a219-7524cae58a35" />
+
+<img width="971" height="241" alt="image" src="https://github.com/user-attachments/assets/f993faa8-27a0-4d65-beda-3d46678b2afa" />
+
+
+---
+
+## CNN 구조 줄이기
+
+"완전연결 은닉층"이란?
+
+이 두 가지 개념을 합친 말입니다. 즉, "구조는 완전연결(Fully Connected) 형태이고, 역할/위치는 은닉층(Hidden Layer)인 계층"을 의미합니다.
+
+```
+
+[입력층]
+    |
+[Conv2D]  (은닉층)
+    |
+[Flatten]
+    |
+[Dense(128)]  <--- 이것이 바로 '완전연결 은닉층'
+    |
+[Dense(10)]   <--- 이것은 '완전연결 출력층'
+   |
+[출력층]
+```
+
+<img width="940" height="329" alt="image" src="https://github.com/user-attachments/assets/610c9f43-5dc9-4788-a14d-eabd4cc293c6" />
+
+- 합성 곱 1단계만 사용, 완전 연결 은닉층 제거
+
+```python
+model = tf.keras.Sequential([
+    tf.keras.layers.InputLayer(input_shape=(28,28,1)), # 입력 28x28x1
+    tf.keras.layers.Conv2D(32,(3,3), activation='relu', padding='same'),
+    tf.keras.layers.MaxPooling2D((2,2)), #max pooling
+    tf.keras.layers.Flatten(),    
+    tf.keras.layers.Dense(10, activation='softmax')    
+    ])
+```
+<table>
+    <tr>
+        <td><img width="792" height="265" alt="image" src="https://github.com/user-attachments/assets/e67f2237-5eb1-4d0e-94d4-49cbb7b3ec91" /></td>
+        <td><img width="895" height="64" alt="image" src="https://github.com/user-attachments/assets/75b09578-8d1c-4fa6-9532-3c04694888a0" /></td>
+    </tr>
+</table>
+
+- 테스트 결과 원래 모델에서 정확도는 89.9%로 떨어졌지만 total params size 많이 줄어듬
+
+---
+
+## filter 갯수 줄이기
+
+<img width="937" height="373" alt="image" src="https://github.com/user-attachments/assets/795ac187-94e7-4a1a-a9a1-5088fc20c510" />
+
+- filter size 32 => 2 변경
+```python
+model = tf.keras.Sequential([
+    tf.keras.layers.InputLayer(input_shape=(28,28,1)), # 입력 28x28x1
+    tf.keras.layers.Conv2D(2,(3,3), activation='relu', padding='same'),
+    tf.keras.layers.MaxPooling2D((2,2)), #max pooling
+    tf.keras.layers.Flatten(),    
+    tf.keras.layers.Dense(10, activation='softmax')    
+    ])
+```
+<table>
+    <tr>
+        <td><img width="820" height="274" alt="image" src="https://github.com/user-attachments/assets/f5e74a3b-08f1-407f-9e7c-060403d9d1da" /></td>
+        <td><img width="917" height="222" alt="image" src="https://github.com/user-attachments/assets/26fc0f1c-7c5a-4907-bc50-3c8c92efc255" /></td>
+    </tr>
+</table>
+
+----
+
+## Verilog 프로젝트를 위한 손글씨 MNIST 모델 테스트
+
+#### 기본 CNN MNIST 손글씨 테스트
+```python
+model = tf.keras.Sequential([
+    tf.keras.layers.InputLayer(input_shape=(28,28,1)), # 입력 28x28x1
+    tf.keras.layers.Conv2D(32,(3,3), activation='relu', padding='same'), # 깊이: 32  ,3x3 , steride:1 , 패딩 출력이랑같이 맞춰준다
+    tf.keras.layers.Conv2D(64,(3,3), activation='relu', padding='same'),
+    tf.keras.layers.MaxPooling2D((2,2)), #max pooling
+    tf.keras.layers.Flatten(),
+    tf.keras.layers.Dense(128,activation='relu'),
+    tf.keras.layers.Dense(10, activation='softmax')
+    
+    ])
+```
+<table>
+    <tr>
+        <td><img width="784" height="340" alt="image" src="https://github.com/user-attachments/assets/3f7d182b-7569-4a2a-9505-00f9f1c9002a" /></td>
+        <td><img width="928" height="223" alt="image" src="https://github.com/user-attachments/assets/751ec58a-32d2-44cf-ae2f-f0d5fe5d4f44" /></td>
+    </tr>
+</table>
+
+---
+
+#### 프로젝트 CNN 구조
+- FPGA 용량을 위해 사이즈를 줄이고 정확도 확인 
+
+<img width="1400" height="695" alt="image" src="https://github.com/user-attachments/assets/c27bc792-1fb6-4538-9427-a818b7580384" />
+
+```python
+model = tf.keras.Sequential([
+    tf.keras.layers.InputLayer(input_shape=(28,28,1)), # 입력 28x28x1
+    tf.keras.layers.Conv2D(3,(5,5), activation='relu', padding='valid'),
+    tf.keras.layers.MaxPooling2D((2,2)), #max pooling
+    tf.keras.layers.Conv2D(3,(5,5), activation='relu', padding='valid'),
+    tf.keras.layers.MaxPooling2D((2,2)), #max pooling
+    tf.keras.layers.Flatten(),
+    tf.keras.layers.Dense(10, activation='softmax')    
+    ])
+```
+
+<img width="794" height="339" alt="image" src="https://github.com/user-attachments/assets/8fbd7196-fe5f-4600-ae7d-78ba8ea00a39" />
+
+<img width="903" height="207" alt="image" src="https://github.com/user-attachments/assets/aac27951-a17c-4084-8b44-4e6c3e350056" />
+
+- FPGA 에 맞게 사이즈는 많이 줄었고 정확도도 96%로 준수하기때문에 위 모델 사용
