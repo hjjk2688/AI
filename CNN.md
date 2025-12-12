@@ -379,4 +379,145 @@ print('max_pooled = \n', max_pooled)
 
 ---
 
+## 구현
 
+#### filter 사용
+- 평균값 필터
+```python
+import numpy as np
+import cv2
+import matplotlib.pyplot as plt
+
+image_color = cv2.imread('images.jpg')
+print('image_color.shaep =', image_color.shape)
+image = cv2.cvtColor(image_color, cv2.COLOR_BGR2GRAY)
+print('image,shape =', image.shape)
+
+filter = np.array([ # 평균값 필터
+        [1,1,1],
+        [1,1,1],
+        [1,1,1]
+    
+    ]) / 9
+
+image_pad = np.pad(image,((1,1),(1,1)))
+print('image_pad.shape = ', image_pad.shape)
+
+convolution = np.zeros_like(image)
+for row in range(image.shape[0]):
+    for col in range(image.shape[1]):
+        window = image_pad[row:row+3, col:col+3]
+        convolution[row, col] = np.clip(np.sum(window*filter),0, 255)
+images = [image, convolution]
+labels = ['gray', 'convolution']
+
+plt.figure(figsize=(10,5))
+for i in range(len(images)):
+    plt.subplot(1,2,i+1)
+    plt.xticks([])
+    plt.yticks([])
+    plt.imshow(images[i], cmap=plt.cm.gray)
+    plt.xlabel(labels[i])
+plt.show()
+
+# cv2.cvtColor 함수로 이미지를 흑백(Grayscale)으로 변환했기 때문에, image는 2차원 배열이 됩니다.
+# 따라서 image.shape는 (세로 크기, 가로 크기) 형태의 튜플(tuple)이 됩니다.
+# image.shape[0]에는 이미지의 세로 크기 (Height)가 들어있습니다.
+# image.shape[1]에는 이미지의 가로 크기 (Width)가 들어있습니다.
+
+
+```
+<table>
+    <tr>
+        <td><img width="253" height="245" alt="image" src="https://github.com/user-attachments/assets/6d8bf1cc-5411-4748-83d6-7246fb20b3a4" /></td>
+        <td><img width="938" height="455" alt="image" src="https://github.com/user-attachments/assets/972ffdde-a97b-43fb-a63d-ac8a75706018" /></td>
+    </tr>    
+</table>
+
+- Edge detection
+
+<img width="411" height="193" alt="image" src="https://github.com/user-attachments/assets/cf0f769d-f82d-4f2a-bc0a-6df9cd1c6cda" />
+
+```python
+filter = np.array([
+    [-1,-1,-1],
+    [-1, 8,-1],
+    [-1,-1,-1]
+])
+```
+---
+## 이미지 단순화 (MaxPooling)
+```python
+import numpy as np
+import cv2
+import matplotlib.pyplot as plt
+
+image_color = cv2.imread('images.jpg')
+print('image_color.shaep =', image_color.shape)
+image = cv2.cvtColor(image_color, cv2.COLOR_BGR2GRAY)
+print('image,shape =', image.shape)
+
+filter = np.array([ # Edge detection
+        [1,1,1],
+        [1,-8,1],
+        [1,1,1]
+    
+    ])
+
+
+image_pad = np.pad(image,((1,1),(1,1)))
+print('image_pad.shape = ', image_pad.shape)
+
+convolution = np.zeros_like(image)
+
+for row in range(image.shape[0]):
+    for col in range(image.shape[1]):
+        window = image_pad[row:row+3, col:col+3]
+        convolution[row, col] = np.clip(np.sum(window*filter),0, 255)
+
+
+max_pooled = np.zeros((int(image.shape[0]/2),int(image.shape[1]/2)))
+
+
+for row in range(0, int(image.shape[0]/2)):
+    for col in range(0,int(image.shape[1]/2)):
+        window = image_pad[2*row:2*row+2, 2*col:2*col+2]
+        max_pooled[row, col] = np.max(window)
+
+
+images = [image, convolution, max_pooled]
+labels = ['gray', 'convolution', 'max_pooled']
+
+plt.figure(figsize=(10,5))
+for i in range(len(images)):
+    plt.subplot(1,3,i+1)
+    plt.xticks([])
+    plt.yticks([])
+    plt.imshow(images[i], cmap=plt.cm.gray)
+    plt.xlabel(labels[i])
+plt.show()
+
+```
+<img width="873" height="298" alt="image" src="https://github.com/user-attachments/assets/b02d4478-a34d-427b-b4fc-aa9a1b766fca" />
+
+---
+## 깊이가 있는 합성곱
+
+3x3x2
+<table>
+    <tr>
+        <td><img width="753" height="236" alt="image" src="https://github.com/user-attachments/assets/23e14b9c-f904-4819-9edd-2f624ada66d1" /></td>
+        <td><img width="751" height="410" alt="image" src="https://github.com/user-attachments/assets/9bcdace6-4fa4-4b37-90d1-232e10a15e1e" /></td>
+    </tr>
+</table>
+
+4x4x2 입력 
+
+<img width="834" height="328" alt="image" src="https://github.com/user-attachments/assets/9040169a-6c17-4d6b-b369-b1d933cb2449" />
+
+
+#### 필터의 깊이의 개수
+
+<img width="776" height="289" alt="image" src="https://github.com/user-attachments/assets/fe7fb066-23ad-4f4e-9231-30bb78e9a41c" />
+
+입력의 깊이는 필터의 깊이를 결정하여 필터의 개수는 출력의 깊이를 결정합니다. 
