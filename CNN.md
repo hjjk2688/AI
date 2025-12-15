@@ -158,6 +158,26 @@
 - CNN의 합성곱(Convolution)은 일반적인 행렬 곱셈(Matrix Multiplication)이 아님
 - "각 자리의 값끼리 곱한 다음 모두 더하는" 방식 (Element-wise Multiplication and Sum)
 
+---
+
+Conv2D 함수의 기본 형식: Conv2D(filters, kernel_size, strides, ...) 
+
+tf.keras.layers.Conv2D(64, (3,3), (1,1), ...) 분석
+
+1. 64: filters (필터의 개수)
+    * 64개의 다른 특징을 감지하겠다는 의미입니다. (64개의 '특수 안경')
+    * 이 레이어의 출력은 64개의 채널(깊이)을 가진 피처 맵이 됩니다.
+2. (3,3): kernel_size (커널 또는 필터의 크기)
+    * 각 필터의 가로, 세로 크기가 3x3 픽셀이라는 의미입니다.
+    * 이것은 이미지 위를 돌아다니는 '돋보기'의 크기와 같습니다. 한 번에 3x3 영역을 보며 특징을 계산합니다.
+    * 3x3은 너무 크지도 작지도 않아 특징을 추출하기에 가장 효율적인 크기 중 하나로 널리 사용됩니다.
+
+3. (1,1): strides (스트라이드, 필터의 이동 보폭)
+    * 필터가 이미지 위를 이동할 때, 가로로 한 칸, 세로로 한 칸씩 움직이라는 의미입니다.
+    * (1,1)은 가장 촘촘하게 이동하며 모든 부분을 다 훑어보는 가장 일반적인 설정입니다.
+
+---
+
 #### 1. 3x3 입력: filter size
 
 <img width="800" height="428" alt="image" src="https://github.com/user-attachments/assets/637d52f7-f3f7-4568-85ac-05fc8898bea2" />
